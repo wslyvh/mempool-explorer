@@ -46,14 +46,14 @@ const columns: GridColDef[] = [
     field: 'gasPrice',
     headerName: 'Gas Price',
     width: 120,
-    valueFormatter: ({ value }) => `${Math.round(utils.formatUnits(value, 'gwei'))} Gwei`,
+    valueFormatter: ({ value }) => `${Math.round(Number(utils.formatUnits(value, 'gwei')))} Gwei`,
   },
   {
     field: 'value',
     headerName: 'Value',
     width: 120,
     align: 'right',
-    valueFormatter: ({ value }) => `${Math.round(utils.formatEther(value) * 1e4) / 1e4} ETH`,
+    valueFormatter: ({ value }) => `${Math.round(Number(utils.formatEther(value)) * 1e4) / 1e4} ETH`,
   },
 ]
 
