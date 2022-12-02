@@ -5,6 +5,8 @@ import { flattenTxpool } from 'utils/txpool'
 import { utils } from 'ethers'
 import { useGasPrice } from 'hooks/useGasPrice'
 import defaultTxData from 'data/txpool_content.json'
+import { BlockWatcher } from 'components/BlockWatcher'
+import { GasPrice } from 'components/GasPrice'
 
 interface Props {
   txData: any
@@ -64,12 +66,14 @@ export function renderAddress(value: string) {
 }
 
 export default function Home(props: Props) {
-  const { gasPrice } = useGasPrice()
-
   return <>
-    <h2>Pending Transactions</h2>
-    <p>Gas Price ⛽ {gasPrice === 0 ? '-' : `${gasPrice} Gwei`}</p>
+    <h2>Current Gas price</h2>
+    <GasPrice />
 
+    <h2>Latest Blocks</h2>
+    <BlockWatcher />
+
+    <h2>Pending Transactions</h2>
     <div style={{ height: 600, width: '100%' }}>
       <DataGrid
         getRowId={(row) => row.hash}
@@ -78,6 +82,7 @@ export default function Home(props: Props) {
         pageSize={50}
       />
     </div>
+
   </>
 }
 
