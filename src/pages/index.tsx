@@ -1,15 +1,16 @@
+import fs from 'fs'
+import { resolve, join } from 'path'
 import { GetStaticProps } from 'next'
 import { DataGrid, GridColDef } from '@mui/x-data-grid'
-import ContentCopyOutlinedIcon from '@mui/icons-material/ContentCopyOutlined'
 import { flattenTxpool } from 'utils/txpool'
 import { utils } from 'ethers'
 import { useGasPrice } from 'hooks/useGasPrice'
-import defaultTxData from 'data/txpool_content.json'
 import { BlockWatcher } from 'components/BlockWatcher'
 import { GasPrice } from 'components/GasPrice'
 
 interface Props {
-  txData: any
+  timestamp: number
+  txData: string
 }
 
 const columns: GridColDef[] = [
@@ -74,10 +75,11 @@ export default function Home(props: Props) {
     <BlockWatcher />
 
     <h2>Pending Transactions</h2>
+    <small>Latest update: {new Date(props.timestamp).toISOString()}</small>
     <div style={{ height: 600, width: '100%' }}>
       <DataGrid
         getRowId={(row) => row.hash}
-        rows={flattenTxpool(props.txData)}
+        rows={flattenTxpool(JSON.parse(props.txData))}
         columns={columns}
         pageSize={50}
       />
@@ -89,11 +91,22 @@ export default function Home(props: Props) {
 export const getStaticProps: GetStaticProps<Props> = () => {
   console.log('getStaticProps')
 
-  // get latest txData from folder/latest
+  const dir = resolve(process.cwd(), 'src', 'data')
+  const files = fs
+    .readdirSync(dir, { withFileTypes: true })
+    .filter((i) => i.isFile() && i.name.endsWith('.json'))
+    .sort((a, b) => b.name.localeCompare(a.name))
+
+  const latestFilename = files[0].name
+  const timestamp = Number(latestFilename.replace('txpool_content_', '').replace('.json', ''))
+  const filepath = resolve(process.cwd(), 'src', 'data', latestFilename)
+  const content = fs.readFileSync(filepath, 'utf8')
 
   return {
     props: {
-      txData: defaultTxData
-    }
+      txData: content,
+      timestamp: timestamp
+    },
+    revalidate: 86400
   }
 }
