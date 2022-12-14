@@ -9,6 +9,7 @@ export function TruncateMiddle(text: string, length: number = 5) {
 }
 
 export function getProvider() {
+    // return new providers.JsonRpcBatchProvider({
     return new providers.JsonRpcProvider({
         url: 'https://bordel.xyz',
         timeout: 1200000

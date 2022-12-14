@@ -15,28 +15,26 @@ export function BlockWatcher() {
         const unique = [...[...blocksRef.current, block].reduce((acc, current) => {
             acc.set(current.number, current)
             return acc
-        }, new Map()).values()]
+        }, new Map()).values()].sort((a: Block, b: Block) => {
+            return b.number - a.number
+        })
 
         blocksRef.current = unique
         setBlocks(unique)
     }, [])
 
     useEffect(() => {
-        const provider = getProvider()
-        provider.on('block', processBlocks)
-    }, [])
+        async function getLatestBlocks() {
+            const provider = getProvider()
+            provider.on('block', processBlocks)
 
-    useEffect(() => {
-        async function getBlock() {
             const block = await provider.getBlock('latest')
-            console.log('LATEST', block)
-            // baseFeePerGas
-            // gasLimit
-            // gasUsed 
-            // transactions.length 
+            const latestBlockNr = block.number
+            await Promise.all(
+                [...Array(10).keys()].map(i => processBlocks(latestBlockNr - i)))
         }
 
-        getBlock()
+        getLatestBlocks()
     }, [])
 
     return (
