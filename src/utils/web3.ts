@@ -8,7 +8,13 @@ export function TruncateMiddle(text: string, length: number = 5) {
     return text
 }
 
-export function getProvider() {
+export function getProvider(test?: true) {
+    if (test) { 
+        return new providers.JsonRpcProvider({
+            url: 'https://rpc.bordel.wtf/sepolia',
+            timeout: 1200000
+        })
+    }
     // return new providers.JsonRpcBatchProvider({
     return new providers.JsonRpcProvider({
         url: 'https://bordel.xyz',
